@@ -14,22 +14,29 @@ further processing for the structure solution and refinement.
 - Reads PETS2-generated CSV output
 - Sorts datasets by **lattice parameters / crystal type**
 - Ranks data quality using:
-  | Metric           | Direction        | Notes                                                        |
-| ---------------- | ---------------- | ------------------------------------------------------------ |
-| Completeness (%) | Higher is better | Fraction of theoretically possible reflections measured      |
-| Resolution (Å)   | Lower is better  | Smaller Å → higher resolution → better quality               |
-| Mosaicity (°)    | Lower is better  | Lower mosaicity → better crystal order                       |
-| Rint(obs) (%)    | Lower is better  | Internal consistency of observed reflections                 |
-| Rint(all) (%)    | Lower is better  | Internal consistency including symmetry-related reflections  |
-| CC1/2 (%)        | Higher is better | Correlation between half datasets → high = high signal/noise |
+  
+| Metric           | Quality Direction | Description                                                                      |
+| ---------------- | ----------------- | -------------------------------------------------------------------------------- |
+| Completeness (%) | Higher is better  | Fraction of theoretically possible reflections that were measured                |
+| Resolution (Å)   | Lower is better   | Smaller Å values correspond to higher spatial resolution and better data quality |
+| Mosaicity (°)    | Lower is better   | Lower mosaicity indicates better crystal order                                   |
+| Rint(obs) (%)    | Lower is better   | Internal consistency of observed reflections                                     |
+| Rint(all) (%)    | Lower is better   | Internal consistency including symmetry-related reflections                      |
+| CC1/2 (%)        | Higher is better  | Correlation between half datasets; higher values indicate better signal-to-noise |
+
+**Normalization Method**
 
 Each quality metric is normalized using a robust Z-score normalization, which reduces sensitivity to outliers and ensures comparability across datasets with different numerical scales.
 For each metric, the normalized value is calculated as:
 
 Z = (x - median(x)) / MAD(x)
+
 where:
+
 x is the value of the metric,
+
 median(x) is the median value of that metric across all datasets,
+
 MAD(x) is the median absolute deviation.
 
 This produces dimensionless normalized values, allowing metrics with different units and ranges to be combined meaningfully.
@@ -39,22 +46,29 @@ This produces dimensionless normalized values, allowing metrics with different u
 Because different metrics contribute unequally to overall crystallographic data quality, a weighted scoring scheme is applied. In particular, resolution is weighted more heavily, as it strongly correlates with several other indicators of data quality.
 The weights used in the final composite score are:
 
-Metric      	Weight
-Resolution	  0.30
-Completeness	0.20
-CC1/2	        0.20
-Rint(obs)	    0.10
-Rint(all)	    0.10
-Mosaicity	    0.10
+| Metric        | Weight |
+|---------------|--------|
+| Resolution    | 0.30   |
+| Completeness  | 0.20   |
+| CC1/2         | 0.20   |
+| Rint(obs)     | 0.10   |
+| Rint(all)     | 0.10   |
+| Mosaicity     | 0.10   |
+
+These values can be edited in the code.
 
 **Composite Quality Score**
 
 The final quality score is calculated as a weighted sum of the normalized metrics:
 
 Q = sum(w_i * Z_i)
+
 where:
+
 w_i is the weight assigned to metric i,
+
 Z_i is the normalized value of metric i.
+
 Higher values of Q indicate higher overall data quality.
 
 **Notes**
